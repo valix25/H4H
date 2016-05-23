@@ -132,10 +132,12 @@ def Cluster(data_csv, l, k_min, k_max):
 	reduced_data = PCA(n_components=2).fit_transform(data_normed)
 	#kmeans = KMeans(init='k-means++', n_clusters=13, n_init=10)
 
+	nr_clusters = max_metric_score_rn[1]
 	kmeans = KMeans(init='random',n_clusters=max_metric_score_rn[1], n_init=10)
 	if(max_metric_score_km[0] < max_metric_score_rn[0]):
 		kmeans = KMeans(init='k-means++', n_clusters=max_metric_score_km[1], 
 			n_init=10)
+		nr_clusters = max_metric_score_km[1]
 	kmeans.fit(reduced_data)
 
 	# Step size of the mesh. Decrease to increase the quality of the VQ.
@@ -172,8 +174,20 @@ def Cluster(data_csv, l, k_min, k_max):
 	plt.yticks(())
 	plt.show()
 
+	store_clusters = {}
+	for i in range(nr_clusters):
+		store_clusters[i] = []
+	i = 0
+	for sample in reduced_data:
+		store_clusters[kmeans.labels_[i]].append(sample)
+		i += 1
+
+	return(kmeans, store_clusters, reduced_data, nr_clusters)
+
+"""
 data_csv = '../data/CA_WHS_HOUSEHOLD.csv'
 # pick columns as field features
 l = ['HOUSEHOLD_CLAIMED_FAMILY_SIZE', 'LOCATION_ID', 'ADMIN_AREA_ID', 
 	'HOUSEHOLD_REFUGEE_STATUS']
 Cluster(data_csv, l, 2, 7)
+"""
