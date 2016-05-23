@@ -1,5 +1,6 @@
 from bokeh.plotting import figure, output_file, show
 from bokeh.charts import Scatter
+from bokeh.models import HoverTool, PanTool, BoxSelectTool, BoxZoomTool, ResetTool
 
 import sys
 import random
@@ -59,8 +60,11 @@ output_file("clustering.html", title="Clustering Bokeh example")
 x_min, x_max = reduced_data[:, 0].min() - 1, reduced_data[:, 0].max() + 1
 y_min, y_max = reduced_data[:, 1].min() - 1, reduced_data[:, 1].max() + 1
 
+tools = [PanTool(), BoxSelectTool(), BoxZoomTool(), ResetTool(), 
+HoverTool(tooltips=[("(x,y)", "($x, $y)")])]
+
 plot = figure(width=500, height=500, title='Clusters', y_range=(y_min, y_max),
-	x_range=(x_min, x_max))
+	x_range=(x_min, x_max), tools=tools)
 
 #plot centroid / cluster center / group mean for each group
 
@@ -99,6 +103,7 @@ i = 0 #counter
 for k,v in store_clusters.iteritems():
 	v = np.asarray(v)
 	plot.scatter(v[:, 0], v[:, 1], color=colors[k], size=5)
+	#plot.select(dict(type=HoverTool)).tooltips = {"x":"$x", "y":"$y"}
 
 show(plot)
 #show(plot)
